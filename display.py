@@ -2,6 +2,7 @@ import vector
 import colorama
 import time
 import msvcrt
+import math
 #import curses
 
 
@@ -9,6 +10,8 @@ import msvcrt
 HEIGHT,WIDTH = 32,32
 display      = [None]  * (HEIGHT*WIDTH)
 FPS          = 10
+DT           = 1/FPS
+GRAVITY      = 5
 
 
 
@@ -53,7 +56,7 @@ def box(center,size):
     while y <= vector1.y:
         while x <= vector1.x:
             if x >= 0 and x < WIDTH and y >= 0 and y < HEIGHT:
-                display[(y*WIDTH) + x] = "Q"
+                display[y*WIDTH + x] = "Q"
             x += 1
         y += 1
         x = vector2.x
@@ -71,8 +74,9 @@ def dot():
     y = 31
     y*WIDTH + x
     display[y*WIDTH + x] = "*"
-def move (y, x):
-    print("\033[%d;%dH" % (y, x))
+def moveCursor():
+    print("\033[H")
+    #print("\033[%d;%dH" % (x, y))
 
 def show():
     startRow,endRow = 0,WIDTH
@@ -84,15 +88,22 @@ def show():
 if __name__ == "__main__":
     colorama.init()
     filler="*"
-    boxC = vector.Vector(5,0)
-    vel  = vector.Vector(0,1)
+    pos = vector.Vector(WIDTH/2,0)
     size = 2
-    quit = False
-    char = None
 
-    fill(filler)
-    box(boxC,size)
-    show()
+    vel  = vector.Vector(0,1)
+    gravity = vector.Vector(0,GRAVITY)
+    dtV = vector.Vector(DT)
+    quit = False
+    while not quit:
+        vel = vel.sum(vel,gravity.mult(dtV))
+        pos = pos.sum(vel.mult(dtV))
+        fill(filler)
+        moveCursor()
+        box(pos,size)
+        show()
+        time.sleep(1/FPS)
+        #move(1,1)
     #while not quit:
     #    char = msvcrt.getch()
     #    if char == "q":
