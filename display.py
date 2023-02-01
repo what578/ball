@@ -7,11 +7,12 @@ import math
 
 
 
-HEIGHT,WIDTH = 32,32
+HEIGHT,WIDTH = 32,64
 display      = [None]  * (HEIGHT*WIDTH)
 FPS          = 10
 DT           = 1/FPS
 GRAVITY      = 5
+WALLDAMPER   = -1.0
 
 
 
@@ -51,6 +52,8 @@ GRAVITY      = 5
 def box(center,size):
     vector2 = center.sub(vector.Vector(size,size))
     vector1 = center.sum(vector.Vector(size,size))
+    vector2.floor()
+    vector1.ceil()
     x = vector2.x
     y = vector2.y
     while y <= vector1.y:
@@ -88,16 +91,34 @@ def show():
 if __name__ == "__main__":
     colorama.init()
     filler="*"
-    pos = vector.Vector(WIDTH/2,0)
+    pos = vector.Vector(WIDTH/2,3)
     size = 2
 
-    vel  = vector.Vector(0,1)
+    vel  = vector.Vector(5,5)
     gravity = vector.Vector(0,GRAVITY)
     dtV = vector.Vector(DT)
     quit = False
     while not quit:
-        vel = vel.sum(vel,gravity.mult(dtV))
+        vel = vel.sum(gravity.mult(dtV))
         pos = pos.sum(vel.mult(dtV))
+
+        if pos.y > HEIGHT - (size+1):
+            pos.y = HEIGHT - (size+1)
+            vel.y *= WALLDAMPER
+        elif pos.y < 0 + size +1:
+            pos.y = 0 + (size+1)
+            vel.y *= WALLDAMPER
+        if pos.x > WIDTH - (size+1):
+            pos.x = WIDTH - (size+1)
+            vel.x *= WALLDAMPER
+        elif pos.x < 0 + size + 1:
+            pos.x = 0 + (size +1)
+            vel.x *= WALLDAMPER
+
+
+
+
+
         fill(filler)
         moveCursor()
         box(pos,size)
