@@ -3,6 +3,7 @@ import colorama
 import time
 import msvcrt
 import math
+import geometry
 #import curses
 
 
@@ -46,6 +47,9 @@ class Display:
         for row in range(self.height):
             for column in range(self.width):
                 self.display[row*self.width + column] = filler
+    def renderGeom(self,geom):
+        geom.render(self.display,self.height,self.width)
+
     def moveCursor(self):
         print("\033[H")
         #print("\033[%dA;%dD" % (0,0))
@@ -64,8 +68,28 @@ class Display:
         while not quit:
             self.fill()
             self.moveCursor()
+            self.renderGeom(self.geometry[0])
             self.show()
             time.sleep(1/self.fps)
+
+    def wallCollision(self,geom):
+        return
+    def leftWallColl(self,geom):
+        return
+    def righWallColl(self,geom):
+        return
+    def topWallColl(self,geom):
+        return
+    def botWallColl(self,geom):
+        wallResponse = None
+        try:
+            wallResponse = self.environmentVariable["wallDamper"]
+        except:
+            wallResponse = 1.0
+        if geom.y > self.height - geom.size:
+            geom.y = self.height - geom.size
+            geom.vel.y *= wallResponse
+        return
 
 
 #------------
@@ -142,8 +166,16 @@ def show():
 
 if __name__ == "__main__":
     #def __init__(self,fps,height,width,dt,environmentVariable = None):
-    environmentVariables = {"filler":"*"}
-    dis         =Display(10,32,32,vector.Vector(1/10,1/10),environmentVariables)
+    environmentVariables = {
+        "filler":"*",
+        "gravity": 5,
+        "wallDamper": -0.9
+        }
+#    def __init__(self,pos,size,vel = vector.Vector(0,0)):
+
+    geometry = [geometry.Square(vector.Vector(5,5),2)]
+
+    dis         =Display(10,32,32,vector.Vector(1/10,1/10),environmentVariables,geometry)
     dis.run()
     #colorama.init()
     #filler="*"

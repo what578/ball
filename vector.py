@@ -29,3 +29,4 @@ class Vector:
     def ceil(self):
         self.x = math.ceil(self.x)
         self.y = math.ceil(self.y)
+        

@@ -38,3 +38,23 @@ class Geometry:
         self.vel = self.vel.sum(adjustVal.mult(dt))
     def calculatePos(self,dt):
         self.pos = self.pos.sum(self.vel.mult(dt))
+
+class Square(Geometry):
+
+    def __init__(self,pos,size,vel = vector.Vector(0,0)):
+        super().__init__(pos,size,vel)
+    def render(self,display,height,width):
+        lowV = self.pos.sub(vector.Vector(self.size))
+        highV= self.pos.sum(vector.Vector(self.size))
+
+        lowV.floor()
+        highV.ceil()
+        x = lowV.x
+        y = lowV.y
+        while x <= highV.x:
+            while y <= highV.y:
+                if x >= 0 and x < height and y >= 0 and y < height:
+                    display[y*height + x] = "Q"
+                y += 1
+            x += 1
+            y = lowV.y
